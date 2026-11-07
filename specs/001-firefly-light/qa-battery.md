@@ -8,19 +8,21 @@ Set `DebugMode = true` in the `Debug` section of `BepInEx/config/com.osmar.Charm
 ## Single player
 - [ ] Log shows `Charm registered: Glowing Jar - Firefly Light` and `CharmGlowingJar 1.0.0 loaded!`.
 - [ ] Store the valuable in a slot: the slot shows its picture and value.
-- [ ] With the jar in a slot and valuables within about 15 m (walk to a room with several), outlines pulse on them roughly every 1.5 s, with a soft sound. Log (DebugMode): `Firefly Light pulse: N valuables, M within 15 m, K highlighted`.
+- [ ] With the jar in a slot and valuables within about 15 m (walk to a room with several), a flash outlines them once, with a soft sound. Log (DebugMode): `Firefly Light flash: K new valuable(s) within 15 m, N in the level`. The jar loses about 3% of its original value and a cooldown veil with seconds appears on the slot for 8 s.
 - [ ] Walk behind a wall so a valuable is in the next room: note whether its outline is still shown through the wall (unverified by code review).
-- [ ] The jar loses value gradually while valuables are in range: about 1.5% of its original value per second. No cooldown veil appears.
-- [ ] Walk to an empty area (nothing within 15 m): no outlines, and the jar stops losing value.
+- [ ] Stay in the same place: after the cooldown the same valuables are NOT flashed again (log: `nothing new within 15 m`) and the jar loses nothing. The value stays put while you stand still, also with the pause menu open.
+- [ ] Walk to another room with valuables you have not seen lit up: the next flash (after the cooldown) shows them and wears the jar once more.
+- [ ] Walk to an empty area (nothing within 15 m): no flash, no wear.
 - [ ] A valuable stored in another slot (or the jar itself) is never outlined; extracted valuables are not outlined.
 - [ ] The map does not gain the valuables you only saw outlined, and no scouting points are awarded.
 - [ ] Take the valuable out: the power stops.
 - [ ] Use it until the valuable breaks: the slot empties, the power stops, no errors in the log.
 
 ## Settings
-- [ ] `WearPercent = 0`: outlines work, no wear.
-- [ ] `Radius = 50`: valuables far away are outlined (at most 12, nearest first). `Radius = 1`: only valuables within 1 m.
-- [ ] `RefreshSeconds = 0.2`: outlines are almost constant, graphics never stack up, the sound repeats often. `RefreshSeconds = 10`: one pulse every 10 s.
+- [ ] `WearPercent = 0`: flashes work, no wear.
+- [ ] `Radius = 50`: valuables far away are outlined (at most 12 per flash, nearest first; the rest come at the next flash). `Radius = 1`: only valuables within 1 m.
+- [ ] `CooldownSeconds = 0`: no veil, a flash as soon as something new is in range. `CooldownSeconds = 30`: one flash every 30 s.
+- [ ] `RememberSeconds = 0`: everything in range is lit up again at every flash (and wears the jar each time). `RememberSeconds = 600`: a valuable is lit up once and not again for ten minutes.
 - [ ] Charm `Enabled = false`: no effect and no wear. CharmCore `Enabled = false`: nothing works.
 
 ## Multiplayer (host and client)

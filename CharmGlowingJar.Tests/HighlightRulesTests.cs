@@ -46,18 +46,18 @@ public class HighlightRulesTests
 	}
 
 	[TestMethod]
-	public void IsDue_TrueWhenNeverShownOrExpired()
+	public void IsDue_TrueWhenNeverShownOrTheMemoryExpired()
 	{
-		Assert.IsTrue(HighlightRules.IsDue(10f, float.NaN, 0.8f));
-		Assert.IsTrue(HighlightRules.IsDue(10f, -1f, 0.8f));
-		Assert.IsTrue(HighlightRules.IsDue(10f, 9.2f, 0.8f));
-		Assert.IsFalse(HighlightRules.IsDue(10f, 9.5f, 0.8f));
+		Assert.IsTrue(HighlightRules.IsDue(100f, float.NaN, 60f));
+		Assert.IsTrue(HighlightRules.IsDue(100f, -1f, 60f));
+		Assert.IsTrue(HighlightRules.IsDue(100f, 40f, 60f));
+		Assert.IsFalse(HighlightRules.IsDue(100f, 41f, 60f));
 	}
 
 	[TestMethod]
-	public void ScanInterval_NeverBelowTheMinimum()
+	public void IsDue_WithNoMemoryEverythingIsAlwaysDue()
 	{
-		Assert.AreEqual(0.2f, HighlightRules.ScanInterval(0.01f));
-		Assert.AreEqual(1.5f, HighlightRules.ScanInterval(1.5f));
+		Assert.IsTrue(HighlightRules.IsDue(100f, 100f, 0f));
+		Assert.IsTrue(HighlightRules.IsDue(100f, 99.9f, 0f));
 	}
 }

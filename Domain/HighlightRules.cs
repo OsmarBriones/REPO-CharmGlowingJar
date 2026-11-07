@@ -52,24 +52,17 @@ namespace CharmGlowingJar.Domain
 		}
 
 		/// <summary>
-		/// True when a valuable may get a new highlight: it was never highlighted (<paramref name="lastShown"/> is NaN or below zero)
-		/// or the previous graphic has expired, i.e. at least <paramref name="graphicLifetime"/> seconds have passed. This prevents
-		/// stacking duplicate graphics when the refresh interval is shorter than the graphic lives.
+		/// True when a valuable may be lit up again: it never was (<paramref name="lastShown"/> is NaN or below zero) or at least
+		/// <paramref name="rememberSeconds"/> have passed since the last time. With a memory of 0 every valuable is always due.
 		/// </summary>
-		internal static bool IsDue(float now, float lastShown, float graphicLifetime)
+		internal static bool IsDue(float now, float lastShown, float rememberSeconds)
 		{
 			if (float.IsNaN(lastShown) || lastShown < 0f)
 			{
 				return true;
 			}
 
-			return now - lastShown >= graphicLifetime;
-		}
-
-		/// <summary>Seconds until the next scan, never below the 0.2 s the setting allows.</summary>
-		internal static float ScanInterval(float refreshSeconds)
-		{
-			return refreshSeconds < 0.2f ? 0.2f : refreshSeconds;
+			return now - lastShown >= rememberSeconds;
 		}
 	}
 }
