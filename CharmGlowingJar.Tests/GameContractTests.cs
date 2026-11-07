@@ -30,9 +30,37 @@ public class GameContractTests
 	[TestMethod]
 	public void Valuable_HasTheValueFields()
 	{
-		// TODO: add one RequireField / RequireMethod line for every game member this charm's effect reads, writes or patches,
-		// so a game update that renames or removes one fails here with a clear message.
+		// Wear is applied by CharmCore to the pocketed valuable's value.
 		RequireField("ValuableObject", "dollarValueCurrent");
+	}
+
+	[TestMethod]
+	public void ValuableObject_HasThePhysGrabObjectTheHighlightTargets()
+	{
+		// ValuableDiscover.New takes the valuable's PhysGrabObject.
+		RequireField("ValuableObject", "physGrabObject");
+	}
+
+	[TestMethod]
+	public void ValuableDirector_HasTheValuableList()
+	{
+		// The list of every valuable in the level, scanned for the ones near the owner.
+		RequireField("ValuableDirector", "valuableList");
+		RequireField("ValuableDirector", "instance");
+	}
+
+	[TestMethod]
+	public void ValuableDiscover_HasTheLocalHighlightEntryPoint()
+	{
+		// New(PhysGrabObject, ValuableDiscoverGraphic.State, ValuableDiscoverCustom): the local-only graphic (no RPC, no map entry).
+		RequireField("ValuableDiscover", "instance");
+		RequireMethod("ValuableDiscover", "New", 3);
+	}
+
+	[TestMethod]
+	public void PlayerController_HasTheInstanceUsedAsOwnerPosition()
+	{
+		RequireField("PlayerController", "instance");
 	}
 
 	// ---- Helpers ----
