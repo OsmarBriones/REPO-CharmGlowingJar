@@ -22,7 +22,6 @@ namespace CharmGlowingJar
 		private readonly List<ValuableObject> candidates = new List<ValuableObject>();
 		private readonly List<float> distances = new List<float>();
 		private readonly List<int> picked = new List<int>();
-		private readonly Dictionary<int, float> lastShown = new Dictionary<int, float>();
 		private float nextScan;
 
 		internal GlowingJarCharm Charm { get; set; } = null!;
@@ -32,6 +31,7 @@ namespace CharmGlowingJar
 			if (Charm == null || !Charm.IsActive)
 			{
 				nextScan = 0f;
+				ReleaseScratch();
 				return;
 			}
 
@@ -68,7 +68,7 @@ namespace CharmGlowingJar
 					continue;
 				}
 
-				float last = lastShown.TryGetValue(valuable.GetInstanceID(), out float value) ? value : float.NaN;
+				float last = Charm.LastShown.TryGetValue(valuable.GetInstanceID(), out float value) ? value : float.NaN;
 				candidates.Add(valuable);
 				// A negative distance makes the valuable skipped: it was lit up recently.
 				distances.Add(HighlightRules.IsDue(Time.time, last, remember) ? Vector3.Distance(origin, valuable.transform.position) : -1f);
@@ -78,28 +78,44 @@ namespace CharmGlowingJar
 			if (picked.Count == 0)
 			{
 				Charm.LogDebug($"Firefly Light: nothing new within {radius:0.#} m ({all.Count} valuables in the level)");
+				ReleaseScratch();
 				return;
 			}
 
 			// Something new to show: start the cooldown and wear the jar.
 			if (!Charm.TryUse())
 			{
+				ReleaseScratch();
 				return;
 			}
 
 			foreach (int index in picked)
 			{
 				ValuableObject valuable = candidates[index];
-				lastShown[valuable.GetInstanceID()] = Time.time;
+				Charm.LastShown[valuable.GetInstanceID()] = Time.time;
 				ValuableDiscover.instance.New(valuable.physGrabObject, ValuableDiscoverGraphic.State.Reminder);
 			}
 
-			if (lastShown.Count > 512)
+			if (Charm.LastShown.Count > 512)
 			{
-				lastShown.Clear();
+				Charm.LastShown.Clear();
 			}
 
 			Charm.LogDebug($"Firefly Light flash: {picked.Count} new valuable(s) within {radius:0.#} m, {all.Count} in the level");
+			ReleaseScratch();
+		}
+
+		/// <summary>Empties the working lists so they do not keep references to valuables between scans (or past the end of the level).</summary>
+		private void ReleaseScratch()
+		{
+			candidates.Clear();
+			distances.Clear();
+			picked.Clear();
+		}
+
+		private void OnDestroy()
+		{
+			ReleaseScratch();
 		}
 	}
 }

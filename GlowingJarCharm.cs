@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using CharmCore.Api;
 
 namespace CharmGlowingJar
@@ -13,6 +14,14 @@ namespace CharmGlowingJar
 			// WearPercent is per flash that really lit something up (a use), and CooldownSeconds is the pause between flashes.
 			Radius = AddSetting("Radius", 15f, 1f, 50f, "How far from you, in metres, valuables are highlighted (1 to 50).");
 			RememberSeconds = AddSetting("RememberSeconds", 60f, 0f, 600f, "Valuables this charm lit up in the last N seconds are skipped, so a flash only shows valuables that are new to you (0 to 600). 0 lights up everything in range at every flash.");
+		}
+
+		/// <summary>When each valuable (by instance id) was last lit up. Per level: cleared when the level ends.</summary>
+		internal Dictionary<int, float> LastShown { get; } = new Dictionary<int, float>();
+
+		protected override void OnLevelEnded()
+		{
+			LastShown.Clear();
 		}
 
 		/// <summary>Highlight distance in metres (1 to 50).</summary>
